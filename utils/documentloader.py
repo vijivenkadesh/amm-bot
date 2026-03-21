@@ -2,9 +2,18 @@ from langchain_community.document_loaders import PyMuPDFLoader
 import logging
 from pathlib import Path
 from langchain_core.documents import Document
-from typing import List
+from typing import List, Iterable
+import sys
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.DEBUG)
+formatter = logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+console_handler = logging.StreamHandler(stream=sys.stdout)
+console_handler.setFormatter(fmt=formatter)
+logger.addHandler(hdlr=console_handler)
+
+# logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 
@@ -15,7 +24,7 @@ class PdfLoader:
     
     # Load the files from the provided directory
 
-    def load_pdf(self) -> List[Document]:
+    def load_pdf(self) -> Iterable[Document]:
         """
         Load PDF documents from the specified directory.
         Returns:
@@ -25,7 +34,7 @@ class PdfLoader:
 
         for p in self.filepath.iterdir():
             file_paths.append(p)
-        logging.debug(f"Found {len(file_paths)} files in the directory: {self.filepath}")
+        logger.info(f"Found {len(file_paths)} files in the directory: {self.filepath}")
 
         if not file_paths:
             raise FileNotFoundError(f"No files found in the directory: {self.filepath}")
@@ -35,9 +44,7 @@ class PdfLoader:
         for path in file_paths:
             loader = PyMuPDFLoader(file_path=path)
             docs = loader.load()
-            documments.append(docs)
+            documments.extend(docs)
 
-        logging.debug(f"Loaded {len(documments)} documents from the directory: {self.filepath}")
+        logger.info(f"Loaded {len(documments)} documents from the directory: {self.filepath}")
         return documments
-
-

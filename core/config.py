@@ -29,5 +29,3 @@ try:
     settings = EnvSettings()
 except ValueError as e:
     print(f"This is the error {str(e)}")
-finally:
-    print("Please set the API key properly")
