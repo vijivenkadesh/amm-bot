@@ -28,6 +28,7 @@ class VectorStoreManager:
             raise ValueError("Chunks can't be empty")
         try:
             vectorstore = FAISS.from_documents(chunks, embeddings)
+            logger.info(msg="Vector store created successfully")
         except Exception as e:
             logger.error(msg=f"Something went wrong while creating vector store. Please refer the error {e}")
             raise
@@ -40,6 +41,14 @@ class VectorStoreManager:
             folder_path = str(Path(f"{folderpath}").resolve())
         except NotADirectoryError as e:
             logger.error(msg=f"Not a valid directorty provided. Please refer the error {e}")
+            raise
 
         vectorstore.save_local(folder_path=str(folder_path))
+        logger.info(msg=f"Vector store saved successfully at {folder_path}")
 
+
+if __name__ == "__main__":
+    embeddings = EmbeddingManager.get_embeddings()
+    chunks = EmbeddingManager.get_chunks(filepath='doc')
+    vectorstore = VectorStoreManager.get_vector_Store(chunks=chunks, embeddings=embeddings)
+    VectorStoreManager.save_vectorstore(folderpath="database", vectorstore=vectorstore)
