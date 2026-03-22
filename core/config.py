@@ -26,9 +26,9 @@ class EnvSettings(BaseSettings):
 
     @field_validator("OPENAI_API_KEY")
     @classmethod
-    def validate_api(cls, v: str):
+    def validate_api(cls, v: SecretStr):
         prefix = "sk-"
-        if not v.startswith(prefix):
+        if not v.get_secret_value().startswith(prefix):
             raise ValueError(f"API key must start with '{prefix}'")
         return v
     

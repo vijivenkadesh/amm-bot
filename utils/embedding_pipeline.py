@@ -2,7 +2,7 @@ import sys
 import os
 import logging
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from documentloader import PdfLoader
+from utils.documentloader import PdfLoader
 from langchain_openai import OpenAIEmbeddings
 from pydantic import SecretStr
 from dotenv import load_dotenv

@@ -1,6 +1,6 @@
 from langchain_community.vectorstores import FAISS
-from embedding_pipeline import EmbeddingManager
-from documentloader import PdfLoader
+from utils.embedding_pipeline import EmbeddingManager
+from utils.documentloader import PdfLoader
 from pathlib import Path
 import logging
 import sys

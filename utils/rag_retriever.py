@@ -1,6 +1,8 @@
 import logging
 import sys
-
+from pathlib import Path
+from langchain_community.vectorstores import FAISS
+from utils.embedding_pipeline import EmbeddingManager
 
 
 # Setting up logging
@@ -11,19 +13,23 @@ console_handler = logging.StreamHandler(stream=sys.stdout)
 console_handler.setFormatter(fmt=formatter)
 logger.addHandler(hdlr=console_handler)
 
-# vectorstore = FAISS.load_local(
-#     folder_path=folder_path,
-#     embeddings=embeddings,
-#     allow_dangerous_deserialization=True  # required for newer LangChain
-# )
 
-# query = "What are the causes of hydraulic system failure?"
+embeddings = EmbeddingManager.get_embeddings()
 
-# # docs = vectorstore.similarity_search(query, k=3)
+folderpath = "database"
+database_path = str(Path(f"{folderpath}").resolve())
+vectorstore = FAISS.load_local(
+folder_path=folderpath,
+embeddings=embeddings,
+allow_dangerous_deserialization=True  # required for newer LangChain
+)
+
+query = "What are the causes of hydraulic system failure?"
+
+# docs = vectorstore.similarity_search(query, k=3)
 
 # query_embedding = embeddings.embed_query(text=query)
 
-# docs_with_Score = vectorstore.similarity_search_with_relevance_scores
+docs_with_Score = vectorstore.similarity_search_with_relevance_scores(query=query, k=4)
 
-
-# print(docs_with_Score)
+print(docs_with_Score)
