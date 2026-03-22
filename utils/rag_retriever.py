@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from langchain_community.vectorstores import FAISS
 from utils.embedding_pipeline import EmbeddingManager
+from sentence_transformers import CrossEncoder
 
 
 # Setting up logging
@@ -30,6 +31,17 @@ query = "What are the causes of hydraulic system failure?"
 
 # query_embedding = embeddings.embed_query(text=query)
 
-docs_with_Score = vectorstore.similarity_search_with_relevance_scores(query=query, k=4)
+docs_with_score = vectorstore.similarity_search(query=query, k=4)
 
-print(docs_with_Score)
+# print(docs_with_score)
+
+cross_encoder = CrossEncoder(model_name_or_path="cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+pairs = [(query, str(doc))for doc in docs_with_score]
+
+scores = cross_encoder.predict(sentences=pairs)
+
+print(scores)
+
+
+
