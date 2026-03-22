@@ -24,7 +24,7 @@ class PdfLoader:
     
     # Load the files from the provided directory
 
-    def load_pdf(self) -> Iterable[Document]:
+    def load_pdf(self) -> List[Document]:
         """
         Load PDF documents from the specified directory.
         Returns:
