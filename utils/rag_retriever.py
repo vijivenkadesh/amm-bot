@@ -44,4 +44,7 @@ scores = cross_encoder.predict(sentences=pairs)
 print(scores)
 
 
+scored_docs = list(zip(docs_with_score, scores))
+scored_docs.sort(key=lambda x: x[1], reverse=True)
 
+print(scored_docs)
