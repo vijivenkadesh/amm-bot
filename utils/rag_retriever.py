@@ -49,4 +49,8 @@ class RAGRetriever:
 
 if __name__ == "__main__":
     query = "What are the causes of hydraulic system failure?"
-    RAGRetriever.load_vector_db()
+    docs = RAGRetriever.retrieve_relevant_docs(query=query, k=5)
+    scored_docs = RAGRetriever.rerank_docs(query=query, docs=docs)
+    print("Top relevant documents:")
+    for doc, score in scored_docs:  
+        print(f"Score: {score:.4f}, Document: {doc.page_content[:200]}...")
