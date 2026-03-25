@@ -28,30 +28,25 @@ class RAGRetriever:
         )
         return vectorstore
 
-# query = "What are the causes of hydraulic system failure?"
+    
+    @classmethod
+    def retrieve_relevant_docs(cls, query: str, k: int = 3):
+        vectorstore = cls.load_vector_db()
+        docs = vectorstore.similarity_search(query, k=k)
+        return docs
+    
 
-# docs = vectorstore.similarity_search(query, k=3)
+    @classmethod
+    def rerank_docs(cls, query: str, docs):
+        cross_encoder = CrossEncoder(model_name_or_path="cross-encoder/ms-marco-MiniLM-L-6-v2")
+        pairs = [(query, str(doc)) for doc in docs]
+        scores = cross_encoder.predict(sentences=pairs)
+        scored_docs = list(zip(docs, scores))
+        scored_docs.sort(key=lambda x: x[1], reverse=True)
+        return scored_docs
 
-# query_embedding = embeddings.embed_query(text=query)
-
-# docs_with_score = vectorstore.similarity_search(query=query, k=4)
-
-# print(docs_with_score)
-
-# cross_encoder = CrossEncoder(model_name_or_path="cross-encoder/ms-marco-MiniLM-L-6-v2")
-
-# pairs = [(query, str(doc))for doc in docs_with_score]
-
-# scores = cross_encoder.predict(sentences=pairs)
-
-# print(scores)
-
-
-# scored_docs = list(zip(docs_with_score, scores))
-# scored_docs.sort(key=lambda x: x[1], reverse=True)
-
-# print(scored_docs)
 
 
 if __name__ == "__main__":
+    query = "What are the causes of hydraulic system failure?"
     RAGRetriever.load_vector_db()
