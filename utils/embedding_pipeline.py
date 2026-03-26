@@ -37,7 +37,7 @@ class EmbeddingManager:
             logger.error(msg="No documents found")
             raise IndexError("No documents found")
         
-        splitter = RecursiveCharacterTextSplitter()
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = splitter.split_documents(documents=documents)
         logger.info(msg=f"{len(chunks)} chunks are created")
         return chunks

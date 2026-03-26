@@ -48,7 +48,7 @@ class RAGRetriever:
 
 
 if __name__ == "__main__":
-    query = "What are the causes of hydraulic system failure?"
+    query = "LANDING GEARS AND DOORS OPERATION"
     docs = RAGRetriever.retrieve_relevant_docs(query=query, k=5)
     scored_docs = RAGRetriever.rerank_docs(query=query, docs=docs)
     print("Top relevant documents:")
