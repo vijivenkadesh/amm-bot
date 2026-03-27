@@ -7,7 +7,7 @@ import sys
 from typing import List
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
-
+from pinecone import Pinecone
 
 # Setting up logging
 logger = logging.getLogger(__name__)
@@ -47,8 +47,36 @@ class VectorStoreManager:
         logger.info(msg=f"Vector store saved successfully at {folder_path}")
 
 
+
+
+    class PineConeManager:
+
+        @classmethod
+        def get_pinecone_vectorstore(cls, api_key: str, environment: str) -> Pinecone:
+            try:
+                pinecone_vectorstore = Pinecone(api_key=api_key, environment=environment)
+                logger.info(msg="PineCone vector store created successfully")
+            except Exception as e:
+                logger.error(msg=f"Something went wrong while creating PineCone vector store. Please refer the error {e}")
+                raise
+            return pinecone_vectorstore
+            
+
+        @classmethod
+        def embedd_pinecone_vectorstore(cls, chunks: List[Document], embeddings: OpenAIEmbeddings) -> Pinecone:
+            if not chunks:
+                raise ValueError("Chunks can't be empty")
+            try:
+                vectorstore = Pinecone.from_documents(chunks, embeddings)
+                logger.info(msg="PineCone vector store created successfully")
+            except Exception as e:
+                logger.error(msg=f"Something went wrong while creating PineCone vector store. Please refer the error {e}")
+                raise
+            return vectorstore
+
+
 if __name__ == "__main__":
     embeddings = EmbeddingManager.get_embeddings()
     chunks = EmbeddingManager.get_chunks(filepath='doc')
-    vectorstore = VectorStoreManager.get_vector_Store(chunks=chunks, embeddings=embeddings)
-    VectorStoreManager.save_vectorstore(folderpath="database", vectorstore=vectorstore)
+    # vectorstore = VectorStoreManager.get_vector_Store(chunks=chunks, embeddings=embeddings)
+    # VectorStoreManager.save_vectorstore(folderpath="database", vectorstore=vectorstore)
