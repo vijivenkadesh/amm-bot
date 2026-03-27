@@ -2,22 +2,26 @@ from langchain_openai import ChatOpenAI
 # from utils.rag_retriever import docs_with_Score
 from core.config import settings
 from schema.schemas import OutputSchema
-from utils.documentloader import PdfLoader
+# from utils.documentloader import PdfLoader
+from utils.rag_retriever import RAGRetriever
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
+# docs = PdfLoader().load_pdf()
 
-docs = PdfLoader().load_pdf()
-
-def main(context):
+def main(query: str):
+    context = RAGRetriever.retrieve_relevant_docs(query=query, k=5)
     llm = ChatOpenAI(api_key=settings.OPENAI_API_KEY, model="gpt-4o-2024-08-06")
-    llm_with_structure = llm.with_structured_output(schema=OutputSchema)
-    response = llm_with_structure.invoke(input=f"Get the candidate data from the provided {context}")
-    return response
+    response = llm.invoke(input=f"You are a Aircraft Maintenance Technical Expert, please respond like an AMM manual based on the following context: {context}")
+    return response.content
 
 
 if __name__ == "__main__":
     import json
-    result = main(docs)
-    json_result = json.dumps(dict(result), indent=4)
-    print(json_result)
+    query = "Summarize the operation of landing gears and doors."
+    result = main(query)
+
+    print(result)
 
