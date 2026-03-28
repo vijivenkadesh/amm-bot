@@ -11,6 +11,8 @@ class EnvSettings(BaseSettings):
     OPENAI_API_KEY: Optional[SecretStr] = Field(description="This is API key for Open AI",
                                 default=None,
                                 strict=True)
+    PINECONE_API_KEY: Optional[SecretStr] = Field(description="This is API key for PineCone",
+                                default=None)
     LANGSMITH_TRACING: str = "true"
     LANGSMITH_ENDPOINT: str = ""
     LANGSMITH_API_KEY: str = ""
