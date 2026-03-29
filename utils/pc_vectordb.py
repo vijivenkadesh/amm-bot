@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from utils.embedding_pipeline import EmbeddingManager
 import os
 from langchain_core.documents import Document
-from typing import List, Dict
+from typing import List, Dict, Any
 from langchain_openai import OpenAIEmbeddings
 import uuid
 
@@ -30,9 +30,16 @@ class PCVectorDB:
     @classmethod
     def get_vectors(cls, chunks: List[Document], embeddings: OpenAIEmbeddings) -> List[Vector]:
         embeddings = EmbeddingManager.get_embeddings()
+        text_list: List[str] = []
+        metadata_list: List[Dict[str, Any]] = []
 
         text_list = [chunk.page_content for chunk in chunks]
         metadata_list = [chunk.metadata for chunk in chunks]
+        
+        for i in range(len(text_list)):
+            text = text_list[i]
+            metadata_list[i]['text'] = text
+
 
         embedding_vectors = embeddings.embed_documents(texts=text_list)
         vectors: List[Vector] = []
@@ -48,6 +55,14 @@ class PCVectorDB:
         index = cls.define_index(index_name=index_name)
         index.upsert(vectors=vectors, namespace=namespace)
         print(f"Vectors upserted successfully in index: {index_name} and namespace: {namespace}")
+
+
+    @staticmethod
+    def list_indices():
+        pc = PCVectorDB.get_pc_db()
+        indices = pc.list_indexes()
+        return indices
+
 
 
 
