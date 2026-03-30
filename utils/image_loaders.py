@@ -1,5 +1,6 @@
 import logging
 import sys
+import os
 from langchain_community.document_loaders import PyMuPDFLoader
 from pathlib import Path
 import fitz
@@ -22,19 +23,19 @@ documents = loader.load()
 
 
 
-doc = fitz.open(file_path)
-image_list = []
-for page_num in range(doc.page_count):
+# doc = fitz.open(file_path)
+# image_list = []
+# for page_num in range(doc.page_count):
 
-    page = doc[page_num]
+#     page = doc[page_num]
 
-    image_info = page.get_images(full=True)
+#     image_info = page.get_images(full=True)
 
-    image_list.append(image_info)
-    # print(f"Page {page_num}: {len(image_info)} images")
+#     image_list.append(image_info)
+#     # print(f"Page {page_num}: {len(image_info)} images")
 
 
-print(image_list)
+# print(image_list)
 
 
 class ImageManager:
@@ -42,11 +43,41 @@ class ImageManager:
         self.file_path = file_path
         self.doc = fitz.open(file_path)
 
-    def extract_images(self):
+    def extract_images_info(self):
         image_list = []
         for page_num in range(self.doc.page_count):
             page = self.doc[page_num]
             image_info = page.get_images(full=True)
             image_list.append(image_info)
         return image_list
+    
+    def save_images(self, output_dir):
+        if not Path(output_dir).exists:
+            Path(output_dir).mkdir(exist_ok=True)
 
+        extracted_images = {}
+        for page_num in range(self.doc.page_count):
+            page = self.doc[page_num]
+            image_info = page.get_images(full=True)
+
+            for img in image_info:
+                xref = img[0]
+                if xref not in extracted_images:
+                    base_image = self.doc.extract_image(xref=xref)
+                    image_bytes = base_image["image"]
+                    image_ext = base_image["ext"]
+
+                    with open(f"{output_dir}/image_{xref}.{image_ext}", "wb") as f:
+                        f.write(image_bytes)
+                    
+                    extracted_images[xref] = f"{output_dir}/image_{xref}.{image_ext}"
+        return extracted_images
+
+
+
+if __name__ == "__main__":
+    file_path = Path("doc") / "cmm.pdf"
+    image_manager = ImageManager(file_path=file_path)
+    image_info = image_manager.extract_images_info()
+    extracted_images = image_manager.save_images(output_dir="images")
+    print(extracted_images)
