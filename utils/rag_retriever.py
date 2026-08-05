@@ -24,7 +24,7 @@ class RAGRetriever:
         vectorstore = FAISS.load_local(
         folder_path=folderpath,
         embeddings=embeddings,
-        allow_dangerous_deserialization=True  # required for newer LangChain
+        allow_dangerous_deserialization=True 
         )
         return vectorstore
 
